@@ -1,0 +1,122 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>コンプレゴルフ</title>
+</head>
+
+<body>
+<div id="panel1"></div>
+
+<select id="commandSelect">
+  <option value="plus">＋</option>
+  <option value="minus">－</option>
+  <option value="mult">×</option>
+  <option value="div">÷</option>
+  <option value="replace">＝</option>
+</select>
+
+<button id="attackBtn">攻撃</button>
+
+<script src="complex.js"></script>
+<script>
+"use strict";
+var hp1 = new Complex(4, 0);
+
+var panel1 = document.getElementById('panel1');
+
+var maxVal = 4;
+
+function fit(x) {
+  if(x instanceof Complex) {
+    var re = x.re();
+    var im = x.im();
+    re = (re > maxVal)? maxVal : re; // 上限フィット
+    re = (re < -maxVal)? -maxVal : re; // 下限フィット
+    re = Math.round(re); // 格子フィット
+    im = (im > maxVal)? maxVal : im; // 上限フィット
+    im = (im < -maxVal)? -maxVal : im; // 下限フィット
+    im = Math.round(im); // 格子フィット
+    return new Complex(re, im);
+  } else {
+    return NaN;
+  }
+}
+
+function disp() {
+  panel1.innerHTML = hp1.toString();
+}
+
+/*
+ * コマンドが常時発動する条件式
+ */
+function always() {
+  return true;
+}
+
+document.getElementById('attackBtn').addEventListener('click', function() {
+  exec(always,
+  function(x) {
+    console.log(document.getElementById('commandSelect').value);
+    return x.plus(new Complex(1, 0));
+  });
+});
+
+/*
+document.getElementById('plus1').addEventListener('click', function() {
+  exec(always,
+  function(x) {
+    return x.plus(new Complex(1, 0));
+  });
+});
+document.getElementById('minus1').addEventListener('click', function() {
+  exec(always,
+  function(x) {
+    return x.plus(new Complex(-1, 0));
+  });
+});
+document.getElementById('plusi').addEventListener('click', function() {
+  exec(always,
+  function(x) {
+    return x.plus(new Complex(0, 1));
+  });
+});
+document.getElementById('minusi').addEventListener('click', function() {
+  exec(always,
+  function(x) {
+    return x.plus(new Complex(0, -1));
+  });
+});
+document.getElementById('rot90').addEventListener('click', function() {
+  exec(always,
+  function(x) {
+    return x.mult(new Complex(0, 1));
+  });
+});
+document.getElementById('rotm90').addEventListener('click', function() {
+  exec(always,
+  function(x) {
+    return x.mult(new Complex(0, -1));
+  });
+});
+document.getElementById('death').addEventListener('click', function() {
+  exec(function(x) {
+    return x.abs()<=2;
+  },
+  function(x) {
+    return new Complex(0, 0);
+  });
+});
+*/
+
+disp();
+
+function exec(condition, command) {
+  if(condition(hp1)) {
+    hp1 = fit(command(hp1));
+  }
+  disp();
+}
+</script>
+</body>
+</html>
