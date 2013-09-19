@@ -3,6 +3,21 @@
 <head>
 <meta charset="utf-8">
 <title>コンプレゴルフ</title>
+<style>
+#commandArea > div {
+	position: relative;
+}
+
+#commandArea .operator {
+	position: absolute;
+	top: 0;
+	left: 0;
+	margin: 0;
+	padding: 0;
+	font-size: 45px;
+	color: #999;
+}
+</style>
 </head>
 
 <body>
@@ -10,7 +25,7 @@
 
 <select id="commandSelect">
   <option value="plus">＋</option>
-  <option value="minus">－</option>
+  <option value="sub">－</option>
   <option value="mult">×</option>
   <option value="div">÷</option>
   <option value="replace">＝</option>
@@ -18,14 +33,18 @@
 
 <button id="attackBtn">攻撃</button>
 
+<div id="commandArea"></div>
+
 <script src="complex.js"></script>
 <script>
 "use strict";
-var hp1 = new Complex(4, 0);
+var hp1 = new Complex(2, 0);
 
 var panel1 = document.getElementById('panel1');
 
 var maxVal = 4;
+
+new Card('sub', 1, 2);
 
 function fit(x) {
   if(x instanceof Complex) {
@@ -44,7 +63,40 @@ function fit(x) {
 }
 
 function disp() {
-  panel1.innerHTML = hp1.toString();
+  panel1.innerHTML = hp1.toString("html");
+}
+
+function Card(com, re, im) {
+  var me = this;
+  this.val = new Complex(re || 0, im || 0);
+  this.elem = document.createElement('div');
+  this.elem.setAttribute('data-re', this.val[0]);
+  this.elem.setAttribute('data-im', this.val[1]);
+  var operator;
+  if(com === 'plus') {
+    operator = "＋";
+  } else if(com === 'sub') {
+    operator = "－";
+  } else if(com === 'mult') {
+    operator = "×";
+  } else if(com === 'div') {
+    operator = "÷";
+  } else {
+    operator = "？";
+  }
+  this.elem.innerHTML = '<p class="operator">'+ operator +'</p>';
+  this.elem.addEventListener('click', function attack() {
+    if(always(hp1)) {
+      hp1 = fit(hp1[com](me.val));
+    }
+    disp();
+  });
+
+  this.elem.innerHTML += this.val.toString("html");
+  document.getElementById('commandArea').appendChild(this.elem);
+}
+Card.prototype.valueOf = function() {
+  return this.val;
 }
 
 /*
@@ -58,7 +110,7 @@ document.getElementById('attackBtn').addEventListener('click', function() {
   exec(always,
   function(x) {
     console.log(document.getElementById('commandSelect').value);
-    return x.plus(new Complex(1, 0));
+    return x.plus(new Complex(-1, 0));
   });
 });
 
@@ -110,13 +162,6 @@ document.getElementById('death').addEventListener('click', function() {
 */
 
 disp();
-
-function exec(condition, command) {
-  if(condition(hp1)) {
-    hp1 = fit(command(hp1));
-  }
-  disp();
-}
 </script>
 </body>
 </html>

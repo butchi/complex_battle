@@ -5,8 +5,20 @@ function Complex(re, im) {
 }
 
 Complex.prototype = new Object();
-Complex.prototype.toString = function() {
-  return "("+this[0].toString()+", "+this[1].toString()+")";
+Complex.prototype.toString = function(mode) {
+	if(mode==="html" || mode==="text") {
+		var ret = "";
+		var x, y;
+		for(y=4; y>=-4; y--) {
+			for(x=-4; x<=4; x++) {
+				ret += (this[0]==x && this[1]==y)? "■" : "□";
+			}
+			ret += (mode==="html")? "<br>" : "\n";
+		}
+		return ret;
+	} else {
+		return "("+this[0].toString()+", "+this[1].toString()+")";
+	}
 }
 
 Complex.prototype.conj = function() {
